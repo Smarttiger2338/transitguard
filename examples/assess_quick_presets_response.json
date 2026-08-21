@@ -1,0 +1,8 @@
+{
+  "message": "These presets are classroom-friendly examples.",
+  "presets": {
+    "safe": {"label": "안전한 환승 예시"},
+    "tight": {"label": "촉박한 환승 예시"},
+    "missed": {"label": "환승 실패 예시"}
+  }
+}

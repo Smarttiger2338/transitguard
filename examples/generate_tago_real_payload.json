@@ -1,0 +1,11 @@
+{
+  "city_code": "22",
+  "origin_node_id": "YOUR_ORIGIN_NODE_ID",
+  "destination_node_id": "YOUR_DESTINATION_NODE_ID",
+  "route_ids": ["YOUR_ROUTE_ID_1", "YOUR_ROUTE_ID_2"],
+  "current_minute": 520,
+  "average_minutes_per_stop": 2.0,
+  "walking_minutes": 4,
+  "minimum_buffer_minutes": 3,
+  "max_transfer_candidates": 5
+}

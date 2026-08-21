@@ -1,0 +1,16 @@
+{
+  "id": "quick-candidate",
+  "requested_start_minute": 520,
+  "origin_station_id": "A",
+  "transfer_station_id": "B",
+  "destination_station_id": "C",
+  "first_route_id": "101",
+  "second_route_id": "708",
+  "first_departure_minute": 524,
+  "transfer_arrival_minute": 540,
+  "second_departure_minute": 552,
+  "final_arrival_minute": 570,
+  "walking_minutes": 4,
+  "minimum_buffer_minutes": 3,
+  "next_vehicle_arrival_minutes": [552, 560]
+}

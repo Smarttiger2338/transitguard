@@ -1,0 +1,10 @@
+{
+  "origin": "대구역",
+  "destination": "동대구역건너",
+  "current_minute": 520,
+  "include_graph": true,
+  "arrival_source": "tago",
+  "tago_city_code": "22",
+  "tago_node_id": "YOUR_TAGO_NODE_ID",
+  "tago_transfer_station_id": "S3"
+}

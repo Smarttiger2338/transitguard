@@ -1,0 +1,45 @@
+{
+  "routes": [
+    {
+      "id": "route-safe",
+      "segments": [
+        {
+          "route_id": "101",
+          "from_station_id": "S1",
+          "to_station_id": "S3",
+          "departure_minute": 520,
+          "arrival_minute": 540
+        },
+        {
+          "route_id": "708",
+          "from_station_id": "S3",
+          "to_station_id": "S4",
+          "departure_minute": 552,
+          "arrival_minute": 570
+        }
+      ],
+      "transfers": [
+        {
+          "from_station_id": "S3",
+          "to_station_id": "S3",
+          "arrival_minute": 540,
+          "walking_minutes": 4,
+          "minimum_buffer_minutes": 3,
+          "candidate_arrivals": [
+            {
+              "station_id": "S3",
+              "route_id": "708",
+              "arrival_minute": 548
+            },
+            {
+              "station_id": "S3",
+              "route_id": "708",
+              "arrival_minute": 552
+            }
+          ],
+          "target_route_id": "708"
+        }
+      ]
+    }
+  ]
+}

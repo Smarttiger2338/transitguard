@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TransitGuard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">TransitGuard</p>
+        <h1>환승 안정성 평가</h1>
+        <p class="hero-text">
+          카카오맵으로 위치를 고르고, TAGO 도착정보를 활용해 기존 경로 후보의 환승 위험을 간단히 확인합니다.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <label class="api-field">
+          API URL
+          <input id="apiBase" value="http://127.0.0.1:8000">
+        </label>
+        <div class="button-row compact">
+          <button id="checkSetup" type="button">상태 확인</button>
+          <button id="loadSample" type="button" class="secondary">예시 불러오기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="status-card">
+      <div>
+        <strong>실행 안내</strong>
+        <p id="setupStatus">start_all_windows.bat 실행 후 상태 확인을 눌러보세요.</p>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-heading">
+        <div>
+          <span class="step">1</span>
+          <h2>실제 데이터로 후보 찾기</h2>
+          <p>
+            장소 검색으로 출발·도착 좌표를 저장하면 주변 TAGO 정류소를 찾아 제한적으로 후보 경로를 평가합니다.
+          </p>
+        </div>
+        <button id="loadKakaoMap" type="button">카카오맵 켜기</button>
+      </div>
+
+      <div id="mapStatus" class="soft-message">카카오 JavaScript 키를 설정한 뒤 카카오맵을 켜세요.</div>
+
+      <div class="planner-grid">
+        <div class="map-card">
+          <div class="search-bar">
+            <label>
+              장소 검색
+              <input id="placeKeyword" placeholder="예: 대구역, 동대구역">
+            </label>
+            <button id="searchPlace" type="button">검색</button>
+          </div>
+          <div id="map" aria-label="Kakao map area">
+            <div class="map-placeholder">지도 대기 중</div>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <h3>검색 결과</h3>
+          <div id="placeResults" class="result-list">검색 결과가 여기에 표시됩니다.</div>
+          <h3>근처 정류소</h3>
+          <div id="nearbyStations" class="result-list">근처 TAGO 정류소 결과가 여기에 표시됩니다.</div>
+        </aside>
+      </div>
+
+      <div class="simple-form">
+        <label>출발 지역
+          <select id="planOriginRegion">
+            <option value="auto">자동 판별</option>
+            <option value="daegu">대구광역시</option>
+            <option value="gyeongsan">경산시</option>
+          </select>
+        </label>
+        <label>도착 지역
+          <select id="planDestinationRegion">
+            <option value="auto">자동 판별</option>
+            <option value="daegu">대구광역시</option>
+            <option value="gyeongsan">경산시</option>
+          </select>
+        </label>
+        <label>출발 장소명<input id="planOriginName" placeholder="예: 대구역"></label>
+        <label>출발 인근 지하철역<input id="planOriginSubwayName" placeholder="자동 검색 또는 직접 입력"></label>
+        <label>출발 위도<input id="planOriginLat" placeholder="검색 결과에서 저장"></label>
+        <label>출발 경도<input id="planOriginLon" placeholder="검색 결과에서 저장"></label>
+        <label>도착 장소명<input id="planDestinationName" placeholder="예: 반월당역"></label>
+        <label>도착 인근 지하철역<input id="planDestinationSubwayName" placeholder="자동 검색 또는 직접 입력"></label>
+        <label>도착 위도<input id="planDestinationLat" placeholder="검색 결과에서 저장"></label>
+        <label>도착 경도<input id="planDestinationLon" placeholder="검색 결과에서 저장"></label>
+        <label>기준 시각<input id="planStartTime" value="지금"></label>
+      </div>
+
+      <details class="advanced-box">
+        <summary>탐색 범위 설정</summary>
+        <div class="simple-form three">
+          <label>주변 출발 정류소 수<input id="planMaxOriginStations" type="number" min="1" max="5" value="5"></label>
+          <label>주변 도착 정류소 수<input id="planMaxDestinationStations" type="number" min="1" max="5" value="5"></label>
+          <label>최대 정류소 조합<input id="planMaxStationPairs" type="number" min="1" max="12" value="8"></label>
+        </div>
+      </details>
+
+      <button id="runLivePlan" type="button" class="primary full-width">실제 TAGO 데이터로 후보 찾기</button>
+      <div id="livePlanStatus" class="soft-message">카카오 장소 검색 결과에서 출발/도착 좌표를 저장한 뒤 실행하세요.</div>
+      <div id="livePlanDiagnostics" class="diagnostic-panel" hidden></div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-heading">
+        <div>
+          <span class="step">2</span>
+          <h2>간편 환승 평가</h2>
+          <p>발표나 테스트용으로 1회 환승 상황을 빠르게 확인할 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="quick-panel">
+        <div class="preset-row">
+          <button id="quickPresetSafe" type="button">안전 예시</button>
+          <button id="quickPresetTight" type="button">촉박 예시</button>
+          <button id="quickPresetMissed" type="button">실패 예시</button>
+        </div>
+
+        <div class="simple-form three">
+          <label>요청 시각<input id="quickStart" value="08:40"></label>
+          <label>첫 노선<input id="quickFirstRoute" value="101"></label>
+          <label>다음 노선<input id="quickSecondRoute" value="708"></label>
+          <label>첫 탑승<input id="quickFirstDeparture" value="08:44"></label>
+          <label>환승지 도착<input id="quickTransferArrival" value="09:00"></label>
+          <label>최종 도착<input id="quickFinalArrival" value="09:30"></label>
+          <label>다음 차량 도착 시각들<input id="quickNextArrivals" value="09:12, 09:20"></label>
+          <label>도보 환승 분<input id="quickWalking" type="number" min="0" value="4"></label>
+          <label>최소 여유 분<input id="quickBuffer" type="number" min="0" value="3"></label>
+          <label>출발 ID<input id="quickOriginId" value="A"></label>
+          <label>환승 ID<input id="quickTransferId" value="B"></label>
+          <label>도착 ID<input id="quickDestinationId" value="C"></label>
+        </div>
+
+        <div class="button-row">
+          <button id="quickAssess" type="button" class="primary">간편 입력으로 평가</button>
+          <button id="quickToJson" type="button" class="secondary">JSON으로 변환</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-grid">
+      <section class="section-card result-section">
+        <div class="section-heading compact-heading">
+          <div>
+            <span class="step">3</span>
+            <h2>평가 결과</h2>
+          </div>
+        </div>
+        <div id="routeCards" class="cards">대기 중</div>
+      </section>
+
+      <section class="section-card">
+        <details open>
+          <summary>고급 입력과 API 응답</summary>
+          <h3>경로 후보 JSON</h3>
+          <textarea id="routeJson" spellcheck="false"></textarea>
+
+          <h3>지도 표시용 좌표</h3>
+          <textarea id="stationLocationsJson" class="small-textarea" spellcheck="false"></textarea>
+          <div class="simple-form three">
+            <label>출발 표시 ID<input id="originVisualId" value="A"></label>
+            <label>환승 표시 ID<input id="transferVisualId" value="B"></label>
+            <label>도착 표시 ID<input id="destinationVisualId" value="C"></label>
+          </div>
+
+          <h3>선택 사항: TAGO 도착정보 보강</h3>
+          <div class="simple-form two">
+            <label>내부 환승 정류장 ID<input id="liveStationId" value="B"></label>
+            <label>TAGO 도시코드<input id="liveCityCode" value="22"></label>
+            <label>TAGO 정류소ID<input id="liveNodeId" placeholder="근처 정류소 선택 시 자동 입력"></label>
+            <label>
+              노선 비교 기준
+              <select id="routeKey">
+                <option value="route_no">노선번호 route_no</option>
+                <option value="route_id">TAGO route_id</option>
+              </select>
+            </label>
+          </div>
+          <button id="assessRoutes" type="button">고급 JSON 평가</button>
+
+          <h3>API 응답</h3>
+          <pre id="output">대기 중</pre>
+        </details>
+      </section>
+    </section>
+  </main>
+  <script src="main.js?v=0.1.0-alpha.29"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "city_code": "22",
+  "origin": {
+    "lat": 35.8759,
+    "lon": 128.5961
+  },
+  "destination": {
+    "lat": 35.8797,
+    "lon": 128.6282
+  },
+  "current_minute": 520,
+  "max_origin_stations": 3,
+  "max_destination_stations": 3,
+  "max_station_pairs": 6
+}

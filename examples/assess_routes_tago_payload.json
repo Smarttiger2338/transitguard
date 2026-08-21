@@ -1,0 +1,44 @@
+{
+  "current_minute": 520,
+  "tago_arrival_sources": [
+    {
+      "station_id": "B",
+      "city_code": "22",
+      "node_id": "YOUR_TAGO_TRANSFER_NODE_ID",
+      "route_key": "route_no"
+    }
+  ],
+  "routes": [
+    {
+      "id": "candidate-live",
+      "requested_start_minute": 520,
+      "segments": [
+        {
+          "route_id": "101",
+          "from_station_id": "A",
+          "to_station_id": "B",
+          "departure_minute": 524,
+          "arrival_minute": 540
+        },
+        {
+          "route_id": "708",
+          "from_station_id": "B",
+          "to_station_id": "C",
+          "departure_minute": 552,
+          "arrival_minute": 570
+        }
+      ],
+      "transfers": [
+        {
+          "from_station_id": "B",
+          "to_station_id": "B",
+          "arrival_minute": 540,
+          "walking_minutes": 4,
+          "minimum_buffer_minutes": 3,
+          "target_route_id": "708",
+          "candidate_arrivals": []
+        }
+      ]
+    }
+  ]
+}
