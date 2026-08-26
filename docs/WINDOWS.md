@@ -1,70 +1,86 @@
-# Windows guide
+# Windows 실행 안내
 
-This guide is for users who just want to run TransitGuard locally.
+이 문서는 TransitGuard를 Windows에서 로컬로 실행하려는 사용자를 위한 안내입니다.
 
-## Easiest method
+## 가장 쉬운 실행 방법
 
-1. Extract the ZIP file.
-2. Open the extracted `transitguard-v0.1.0-alpha.11` folder.
-3. Double-click `setup_windows.bat`.
-4. Double-click `start_all_windows.bat`.
-5. Open `http://127.0.0.1:8080`.
+1. 프로젝트 ZIP 파일을 압축 해제하거나 저장소를 내려받습니다.
+2. 프로젝트 폴더에서 setup_windows.bat을 실행합니다.
+3. 필요하면 생성된 .env에 TAGO 또는 Kakao 키를 입력합니다.
+4. start_all_windows.bat을 실행합니다.
+5. 브라우저에서 http://127.0.0.1:8080에 접속합니다.
 
-`setup_windows.bat` avoids the PowerShell script-policy problem because it uses
-`activate.bat`/direct Python execution instead of `Activate.ps1`.
+setup_windows.bat은 가상환경을 만들고 필요한 패키지를 설치한 뒤 기본 테스트를 실행합니다.
 
-## If PowerShell says scripts are disabled
+## 실행 주소
 
-You do not need to activate the environment manually. Use the `.bat` files.
+| 용도 | 주소 |
+|---|---|
+| 웹 데모 | http://127.0.0.1:8080 |
+| API 문서 | http://127.0.0.1:8000/docs |
+| 환경설정 점검 | http://127.0.0.1:8000/api/setup/check |
 
-If you still want to use PowerShell, run Python through the virtual environment:
+## PowerShell에서 스크립트가 차단되는 경우
 
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m uvicorn transitguard.api.app:app --reload
-```
+가상환경을 직접 활성화할 필요가 없습니다. 포함된 배치 파일을 사용하거나 다음처럼 가상환경의 Python을 직접 실행하세요.
 
-## If timezone tests fail
+    .\.venv\Scripts\python.exe -m pytest -q
+    .\.venv\Scripts\python.exe -m uvicorn transitguard.api.app:app --reload
 
-TransitGuard now installs `tzdata` automatically on Windows and also falls back
-to fixed KST when `Asia/Seoul` is unavailable. Run:
+## TAGO 실데이터 사용
 
-```cmd
-setup_windows.bat
-```
+예제 평가와 기본 테스트는 TAGO 키 없이 실행할 수 있습니다. 실제 정류소와 버스 도착정보를 사용하려면 .env에 다음 값을 입력합니다.
 
-If you installed the project before this fix, reinstall dependencies:
+    TAGO_SERVICE_KEY=발급받은_서비스_키
 
-```cmd
-.venv\Scripts\python.exe -m pip install -e ".[dev,api]"
-```
+서버를 다시 시작한 뒤 설정 상태를 확인합니다.
 
-## Live TAGO data
+    http://127.0.0.1:8000/api/setup/check
 
-Demo and tests work without a TAGO key. Live TAGO endpoints need `.env`:
+실제 키가 오류 화면, 로그 또는 시연영상에 보이지 않도록 주의하세요.
 
-```env
-TAGO_SERVICE_KEY=your_public_data_service_key
+## Kakao 지도 사용
 
-# Optional: Kakao Map browser visualization
-KAKAO_MAP_JAVASCRIPT_KEY=your_kakao_javascript_key
-```
+Kakao 지도는 선택 기능이며 평가 엔진과 오프라인 테스트에는 필요하지 않습니다.
 
-After starting the API, check setup status here:
+1. Kakao Developers에서 애플리케이션을 만듭니다.
+2. JavaScript 키를 확인합니다.
+3. 웹 플랫폼 도메인에 http://127.0.0.1:8080을 등록합니다.
+4. .env에 KAKAO_MAP_JAVASCRIPT_KEY를 입력합니다.
+5. API 서버를 다시 시작합니다.
 
-```text
-http://127.0.0.1:8000/api/setup/check
-```
+Kakao 지도는 장소 검색, 좌표 선택, 마커와 경로 표시용이며 대중교통 경로 자체는 만들지 않습니다.
 
+## 시간대 오류
 
-## Kakao Map visualization
+TransitGuard는 Windows에서 tzdata를 설치하며 Asia/Seoul을 사용할 수 없을 때 고정 KST로 대체합니다. 기존 설치에서 시간대 테스트가 실패하면 의존성을 다시 설치하세요.
 
-Kakao Map is optional. The assessment engine and offline tests work without it.
+    .\.venv\Scripts\python.exe -m pip install -e ".[dev,api]"
 
-To enable the browser map:
+## TAGO 요청 시간 초과
 
-1. Create a Kakao Developers app.
-2. Copy the JavaScript Key.
-3. Register `http://127.0.0.1:8080` as a Web platform domain.
-4. Put the key in `.env` as `KAKAO_MAP_JAVASCRIPT_KEY`.
-5. Restart the API server and open the web demo.
+TAGO 공공데이터 서버가 느리거나 호출이 집중되면 시간 초과가 발생할 수 있습니다.
+
+- 잠시 뒤 다시 시도합니다.
+- 출발·도착 주변 정류소 수와 정류소 조합 수를 줄입니다.
+- 실시간 도착정보 탐색 옵션은 필요한 경우에만 사용합니다.
+- /api/tago/diagnostics와 후보 0건 진단 정보를 확인합니다.
+
+시간 초과는 서비스 키 오류와 다른 문제입니다. 오류 메시지와 설정 점검 결과를 함께 확인하세요.
+
+## 후보가 0건인 경우
+
+후보가 없다는 결과가 항상 프로그램 오류를 의미하지는 않습니다. 웹 화면에서 다음 정보를 확인하세요.
+
+- 적용 지역 및 도시코드
+- 확인한 출발·도착 정류소
+- 출발 정류소의 경유 노선
+- 실제 도착정보 존재 여부
+- 가능한 원인과 다음 검색 제안
+
+경산 내부 이동이라면 cityCode 37100과 GYB 정류소 정책이 표시되는지 확인하세요.
+
+## 포트가 이미 사용 중인 경우
+
+8000 또는 8080 포트를 사용하는 다른 프로그램을 종료한 뒤 다시 실행하세요. 기존 TransitGuard 명령 창이 남아 있다면 해당 창을 먼저 닫습니다.
+
