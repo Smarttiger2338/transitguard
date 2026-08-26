@@ -1,144 +1,137 @@
-# Changelog
+# 변경 이력
 
-- Fixed Gyeongsan Jain stops being reported as route-less when TAGO returns many
-  legitimate branch/direction route IDs for a single GYB stop.
+이 문서는 TransitGuard 공개 버전의 주요 변경사항을 기록합니다. API 경로, 필드명과 내부 상태값은 호환성을 위해 영문 표기를 유지합니다.
+
+## 다음 버전
+
+- TAGO가 하나의 GYB 정류소에 정상적인 분기·방향별 노선 ID를 많이 반환할 때 경산 자인 지역 정류소를 노선 없음으로 잘못 판단하던 문제를 수정했습니다.
+- README와 공개 가이드, 환경변수 예시와 Windows 실행 안내를 한국어로 정리했습니다.
 
 ## 0.1.0-alpha.29
 
-- Removed the browser planner's hidden `cityCode=22` default that forced every search through Daegu.
-- Added separate origin/destination region controls, automatically populated from Kakao address data.
-- Enforced `37100`/GYB for Gyeongsan-only trips and `22`/DGB for Daegu-boundary trips.
-- Displayed the effective TAGO region policy directly in the live-plan diagnostics.
-- Added regression tests for misleading mixed DGB/GYB nearby-stop ordering.
+- 브라우저 경로 탐색에 숨겨져 있던 cityCode=22 기본값을 제거했습니다.
+- 출발지와 도착지의 지역 선택 항목을 분리하고 Kakao 주소정보로 자동 설정하도록 했습니다.
+- 경산 내부 이동은 37100/GYB, 대구가 포함된 이동은 22/DGB 정책을 적용했습니다.
+- 실제 적용된 TAGO 지역 정책을 실사용 진단 화면에 표시했습니다.
+- DGB/GYB 정류소가 섞인 응답 순서로 잘못된 지역을 선택하지 않도록 회귀 테스트를 추가했습니다.
 
 ## 0.1.0-alpha.28
 
-- Added explicit trip-region rules: Gyeongsan local uses 37100/GYB, while Daegu local and Daegu-Gyeongsan use 22/DGB.
-- Replaced station-ID-only guidance with names sourced from complete route-stop data.
-- Clearly distinguishes live boarding ETA from estimated travel/alighting times instead of presenting estimates as an exact timetable.
+- 경산 내부와 대구 포함 이동에 대한 명시적인 지역 규칙을 추가했습니다.
+- 정류소 ID만 표시하던 안내를 전체 노선 정류소 데이터에서 얻은 정류소 이름으로 바꿨습니다.
+- 실제 승차 도착예정정보와 추정 이동·하차시간을 구분해 추정값이 정확한 시간표처럼 보이지 않도록 했습니다.
 
 ## 0.1.0-alpha.27
 
-- Prioritized route-bearing Gyeongsan station IDs before empty DGB mirrors and searched same-city pairs first.
-- Enabled live-arrival candidate discovery by default and kept topology candidates as explicit estimates.
-- Added detailed route itineraries with boarding, all intermediate stops, alighting, clock times, and time provenance.
+- 노선이 없는 DGB 미러보다 실제 경유 노선이 있는 경산 정류소 ID를 우선하고 같은 도시의 정류소 조합부터 확인하도록 했습니다.
+- 실시간 도착정보 후보 탐색과 노선 구조 기반 추정 후보를 함께 처리하도록 개선했습니다.
+- 승차, 전체 경유 정류소, 하차, 시각과 시간 출처를 포함한 상세 경로 안내를 추가했습니다.
 
 ## 0.1.0-alpha.26
 
-- Changed the station limit to count physical stops while automatically adding co-located DGB/GYB mirror IDs.
-- Added consistent `HH:MM` and `+N일 HH:MM` fields to planner, segment, arrival, and transfer output.
-- Updated route cards to display departure and arrival times for every segment.
+- 정류소 제한을 API 행이 아닌 물리 정류소 기준으로 적용하고 같은 위치의 DGB/GYB 미러 ID를 함께 포함했습니다.
+- 경로, 구간, 도착과 환승 결과에 HH:MM 및 +N일 HH:MM 형식의 시간을 추가했습니다.
+- 경로 카드에 모든 구간의 출발·도착 시각을 표시했습니다.
 
 ## 0.1.0-alpha.25
 
-- Fixed boundary searches that selected only DGB mirror stops even when usable GYB stops were present later in the same TAGO nearby-stop response.
-- Nearby stop selection now alternates city codes, and the browser checks five stops per side with eight bounded pairs.
+- 사용 가능한 GYB 정류소가 뒤에 있어도 DGB 미러 정류소만 선택하던 지역 경계 검색 문제를 수정했습니다.
+- 주변 정류소를 도시코드별로 번갈아 선택하고 브라우저 기본 탐색 범위를 조정했습니다.
 
 ## 0.1.0-alpha.24
 
-- Added multi-city-code planning for regional boundaries, a 10-70 call request budget, direct-route early stopping, and per-city request caches.
-- Fixed subway parsing for the current TAGO response shape where `subwayRouteName` is the only line identifier.
-- Improved chained transfer timing and ranking with minimum buffers and an explicit transfer penalty.
-- Added Public Data Portal gateway XML error parsing and live validation for the supplied Gyeongsan-to-Daegu coordinates.
+- 지역 경계를 위한 다중 도시코드 탐색, 요청별 API 호출 예산, 직행 경로 조기 종료와 도시별 캐시를 추가했습니다.
+- subwayRouteName만 제공되는 현재 TAGO 응답 형식의 지하철 노선 파싱을 수정했습니다.
+- 최소 환승 여유와 환승 페널티를 반영해 연속 환승 시간과 순위화를 개선했습니다.
+- 공공데이터포털 게이트웨이 XML 오류 처리와 경산-대구 좌표 실데이터 검증을 추가했습니다.
 
 ## 0.1.0-alpha.23
 
-- Fixed the TAGO stop-route parameter casing so a stop lookup no longer returns a city's entire route catalogue.
-- Added route de-duplication, single-page bounds, and a defensive city-wide-response check to reduce timeouts and false zero-candidate results.
-- De-duplicated zero-result diagnostics by origin stop, capped displayed routes, and clarified Korean causes and suggestions.
+- 정류소 경유 노선 조회의 TAGO 매개변수 대소문자를 수정해 도시 전체 노선 목록이 잘못 반환되는 문제를 해결했습니다.
+- 노선 중복 제거, 단일 페이지 제한과 비정상 도시 전체 응답 검사를 추가했습니다.
+- 후보 0건 진단에서 출발 정류소와 표시 노선을 제한하고 한국어 원인·제안을 명확히 했습니다.
 
 ## 0.1.0-alpha.22
 
-- Added automatic nearest-subway-station lookup within 5 km through Kakao category search.
-- Added one-transfer Daegu subway candidates through Banwoldang and Cheongna Hill.
-- Improved Kakao place-name normalization for strings such as `대구2호선 임당역`.
-- Fixed origin, transfer, and final subway station map-coordinate assignment.
-- Kept subway times and first/last-mile access explicitly estimated.
+- Kakao 카테고리 검색을 이용한 5km 이내 최근접 지하철역 탐색을 추가했습니다.
+- 반월당과 청라언덕을 이용한 대구 지하철 1회 환승 후보를 추가했습니다.
+- 대구2호선 임당역 같은 Kakao 장소명 정규화를 개선했습니다.
+- 출발·환승·도착 지하철역의 지도 좌표 연결을 수정했습니다.
+- 지하철 시간과 첫 구간·마지막 구간 접근시간을 추정값으로 명확히 표시했습니다.
 
 ## 0.1.0-alpha.21
 
-- Added official TAGO SubwayInfo keyword station lookup.
-- Added direct same-line subway candidates to coordinate planning.
-- Added origin/destination place-name fields and automatic Kakao place-name transfer.
-- Added subway endpoint parsing and integrated subway candidate tests.
-- Clearly marks subway travel times as estimates; subway transfers are not yet supported.
+- 공식 TAGO SubwayInfo 키워드 역 검색을 추가했습니다.
+- 같은 노선의 지하철 직접 후보와 장소명 전달을 좌표 기반 탐색에 추가했습니다.
+- 지하철 응답 파싱과 후보 테스트를 추가했습니다.
 
 ## 0.1.0-alpha.20
 
-- Changed coordinate planning to topology-first discovery instead of live-arrival-first discovery.
-- Disabled expensive live-arrival route discovery by default; it remains available through `use_live_arrival_discovery`.
-- Added `max_candidates` and stop checking after enough candidates are found.
-- Reused topology route lists in diagnostics without an extra arrival API request.
+- 좌표 기반 탐색을 실시간 도착정보 우선 방식에서 노선 구조 우선 방식으로 변경했습니다.
+- 비용이 큰 실시간 후보 탐색은 기본적으로 끄고 use_live_arrival_discovery 옵션으로 남겼습니다.
+- max_candidates와 충분한 후보를 찾은 뒤 탐색을 중단하는 기능을 추가했습니다.
+- 추가 도착정보 호출 없이 캐시된 노선 구조를 진단에 재사용했습니다.
 
 ## 0.1.0-alpha.19
 
-- Increased the timeout for essential origin/destination nearby-stop requests to 12 seconds.
-- Added one bounded retry for nearby-stop timeouts without multiplying every route lookup.
-- Improved the Korean web message when the TAGO public-data server remains slow.
+- 출발·도착 주변 정류소 핵심 요청의 시간 제한을 12초로 늘렸습니다.
+- 모든 노선 요청을 반복하지 않도록 주변 정류소 시간 초과에 한 번의 제한적 재시도를 추가했습니다.
+- TAGO 서버가 계속 느릴 때 표시하는 한국어 웹 메시지를 개선했습니다.
 
 ## 0.1.0-alpha.18
 
-- Run route-topology discovery even when live-arrival discovery raises an error.
-- Increased default stop, pair, and route coverage to avoid silently excluding valid routes.
-- Added walking transfers between nearby stops with different TAGO node IDs.
-- Reused station-route and route-stop responses across checked station pairs.
-- Fixed shared loop state that could stop later route searches too early.
+- 실시간 도착정보 탐색이 실패해도 노선 구조 탐색을 계속하도록 했습니다.
+- 정상 경로 누락을 줄이기 위해 기본 정류소, 조합과 노선 탐색 범위를 조정했습니다.
+- 서로 다른 TAGO 정류소 ID 사이의 도보 환승을 추가했습니다.
+- 정류소별 노선과 노선별 정류소 응답을 조합 간 재사용했습니다.
 
 ## 0.1.0-alpha.17
 
-- Added a bounded stop-route topology fallback when live arrival discovery returns no candidates.
-- Supports direct and one-transfer topology candidates using estimated times.
-- Clearly labels topology fallback routes as estimates in API diagnostics and the web demo.
+- 실시간 도착정보에서 후보를 찾지 못하면 제한된 정류소-노선 구조 탐색을 실행하도록 했습니다.
+- 추정시간을 사용하는 직행 및 1회 환승 후보를 지원했습니다.
+- API 진단과 웹 데모에서 구조 기반 후보가 추정값임을 표시했습니다.
 
 ## 0.1.0-alpha.16
 
-- Added structured diagnostics for zero-candidate coordinate planning results.
-- Exposed checked origin/destination stops plus origin arrivals and route IDs without extra TAGO calls.
-- Added Korean likely-cause and recovery suggestions to the API and web demo.
-- Reduced default station, pair, route, and transfer search limits to lower timeout risk.
-- Rendered zero results as a successful, actionable diagnostic state in the web demo.
+- 좌표 기반 탐색 결과가 0건일 때 구조화된 진단을 추가했습니다.
+- 추가 TAGO 호출 없이 확인한 출발·도착 정류소, 출발 도착정보와 노선 ID를 공개했습니다.
+- 가능한 원인과 재시도 방법을 한국어로 제공했습니다.
+- 시간 초과 위험을 줄이기 위해 기본 탐색 제한을 조정했습니다.
+- 후보 0건을 오류가 아닌 정상적인 진단 결과로 웹 데모에 표시했습니다.
 
 ## 0.1.0-alpha.15
 
-- Simplified the web demo into a cleaner card-based interface.
-- Reordered the demo around the real-use flow: choose places, run live TAGO planning, review results.
-- Moved JSON and raw API details into an advanced section so first-time users are not overwhelmed.
-- Kept the alpha.14 API and test behavior unchanged.
+- 웹 데모를 간단한 카드 형태로 정리했습니다.
+- 장소 선택, 실제 TAGO 탐색과 결과 확인 순으로 주요 흐름을 재배치했습니다.
+- JSON과 원시 API 상세정보를 고급 항목으로 이동했습니다.
 
 ## 0.1.0-alpha.14
 
-- Added practical live mode: `POST /api/routes/plan/tago` accepts origin/destination coordinates, finds nearby TAGO stops, and runs bounded live candidate discovery.
-- Added a web-demo **실사용 모드** so users can save Kakao place coordinates as live origin/destination and run TAGO-based planning without manually knowing node IDs first.
-- Added `examples/plan_tago_coordinates_payload.json`.
-- Added station-location hints and attempted-pair diagnostics to practical live responses.
-- Added tests for coordinate-based practical planning and graceful empty-result handling.
+- 출발·도착 좌표로 주변 TAGO 정류소와 제한된 후보를 찾는 POST /api/routes/plan/tago를 추가했습니다.
+- Kakao 장소 좌표를 실사용 출발·도착지로 저장하는 웹 모드를 추가했습니다.
+- 좌표 기반 탐색 예제, 위치 힌트, 시도한 정류소 조합 진단과 관련 테스트를 추가했습니다.
 
 ## 0.1.0-alpha.12
 
-- Added `POST /api/routes/assess/quick` for form-style one-transfer assessment.
-- Added Korean status labels, route summaries, recommendations, transfer messages, and score breakdowns to API responses.
-- Added a web-demo quick input mode so users can test TransitGuard without manually editing JSON.
-- Fixed duplicate web-demo output assignment and duplicate marker cleanup.
-- Added `examples/assess_quick_payload.json` and API tests for the new friendly endpoint.
+- 폼 형태의 한 번 환승 평가 API인 POST /api/routes/assess/quick을 추가했습니다.
+- 한국어 상태, 경로 요약, 추천, 환승 메시지와 점수 내역을 API 응답에 추가했습니다.
+- JSON을 직접 편집하지 않아도 되는 웹 데모 간편 입력 모드를 추가했습니다.
 
 ## 0.1.0-alpha.11
 
-- Added optional Kakao Map integration to the browser demo.
-- Added `GET /api/kakao/config` so the static demo can load the public Kakao JavaScript key from the API server.
-- Added Kakao place search, map markers, route polyline visualization, and station-coordinate editing in `web-demo`.
-- Added a nearby TAGO stop lookup flow from selected Kakao place coordinates.
-- Added `KAKAO_MAP_JAVASCRIPT_KEY` to `.env.example` and setup diagnostics.
-- Updated README and docs to clarify that Kakao Map is for visualization, not automatic transit routing.
+- 브라우저 데모에 선택적인 Kakao 지도 연동을 추가했습니다.
+- GET /api/kakao/config, 장소 검색, 지도 마커, 경로선과 정류소 좌표 편집을 추가했습니다.
+- 선택한 Kakao 좌표에서 주변 TAGO 정류소를 찾는 흐름을 추가했습니다.
+- Kakao 지도는 시각화용이며 자동 대중교통 경로 생성기가 아님을 문서에 명시했습니다.
 
 ## 0.1.0-alpha.10
 
-- Refocused the project around existing route-candidate assessment instead of full route generation.
-- Added `POST /api/routes/assess` as the primary API.
-- Added optional `tago_arrival_sources` to merge real TAGO arrivals into transfer checks.
-- Reworked the web demo so it evaluates supplied route candidates rather than presenting itself as a map/router.
-- Added `examples/assess_routes_payload.json` and `examples/assess_routes_tago_payload.json`.
-- Updated README and docs to avoid overstating the project as a complete route planner.
+- 프로젝트의 중심을 완전 경로 생성에서 기존 경로 후보 평가로 변경했습니다.
+- 핵심 API인 POST /api/routes/assess를 추가했습니다.
+- 실제 TAGO 도착정보를 환승 평가에 결합하는 tago_arrival_sources를 추가했습니다.
+- 웹 데모와 문서를 경로 후보 평가 중심으로 개편했습니다.
 
-## Earlier alpha versions
+## 이전 알파 버전
 
-- Added route evaluation, ranking, demo graph, TAGO helper APIs, Windows batch scripts, and setup diagnostics.
+- 경로 평가와 순위화, 예제 그래프, TAGO 보조 API, Windows 배치 파일과 설정 진단을 추가했습니다.
+
