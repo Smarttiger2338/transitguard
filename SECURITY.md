@@ -1,9 +1,26 @@
-# Security Policy
+# 보안 정책
 
-## Reporting
+## 보안 문제 제보
 
-Please report security issues privately instead of opening a public issue.
+API 키 노출, 입력 검증 우회 또는 개인정보 노출과 같은 보안 문제는 공개 Issue에 민감한 내용을 올리지 말고 저장소 관리자에게 비공개 방식으로 알려주세요.
 
-## Secrets
+제보할 때는 문제가 발생한 버전, 재현 조건, 예상 영향과 민감정보를 제거한 오류 메시지를 포함하면 확인에 도움이 됩니다. 실제 API 키, 접근 토큰과 개인정보는 제보 내용에 포함하지 마세요.
 
-Do not commit real API keys, service keys, tokens, or private datasets. Use `.env` locally and keep `.env.example` safe to publish.
+## 비밀정보 관리
+
+- 실제 API 키, 서비스 키, 토큰과 비공개 데이터셋을 커밋하지 않습니다.
+- 로컬 키는 .env에 저장하고 공개 가능한 항목명만 .env.example에 작성합니다.
+- 화면 녹화, 로그, 스크린샷과 오류 보고에 키가 노출되지 않았는지 확인합니다.
+- 노출된 키는 파일이나 Git 기록에서 지우는 것만으로 충분하지 않습니다. 발급기관에서 즉시 폐기하고 새 키를 발급받으세요.
+
+## 배포 설정
+
+- TRANSITGUARD_CORS_ORIGINS=*는 개발 환경 기본값입니다. 배포 환경에서는 신뢰할 수 있는 출처만 지정하세요.
+- Kakao JavaScript 키는 Kakao Developers에서 허용 웹 도메인을 제한하세요.
+- TAGO 서비스 키를 브라우저 코드에 직접 포함하지 마세요.
+- 외부 API 오류 응답에 내부 설정이나 키가 나타나지 않도록 확인하세요.
+
+## 외부 데이터 주의사항
+
+TransitGuard는 외부 공공데이터 API를 사용하므로 응답 지연, 누락 또는 형식 변경이 발생할 수 있습니다. 외부 응답은 신뢰할 수 없는 입력으로 취급하고 데이터 형식과 값 범위를 검증해야 합니다.
+
