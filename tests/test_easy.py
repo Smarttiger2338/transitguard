@@ -61,9 +61,9 @@ def test_assess_simple_transfer_returns_korean_safe_summary():
         second_route="708",
         first_departure="08:40",
         transfer_arrival="08:55",
-        second_departure="09:04",
-        final_arrival="09:20",
-        next_vehicle_arrivals=["09:04", "09:12"],
+        second_departure="09:06",
+        final_arrival="09:22",
+        next_vehicle_arrivals=["09:06", "09:12"],
         walking_minutes=4,
         minimum_buffer_minutes=3,
     )
